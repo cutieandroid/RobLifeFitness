@@ -2,11 +2,18 @@ package com.example.rob_lifefitnessdiet;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +29,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String channel_id="fitnesstestchannel";
+    private static final int not_id=1;
     DrawerLayout drawerLayout;
     TextView emailaccount;
 
@@ -40,6 +49,32 @@ public class MainActivity extends AppCompatActivity {
         String currentusersemail=auth.getCurrentUser().getEmail();
         emailaccount.setText(currentusersemail);
         final FloatingActionButton suportactionbuton=findViewById(R.id.supportActionButton);
+
+        //notification
+        NotificationManager nm= (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Drawable drawable= ResourcesCompat.getDrawable(getResources(),R.drawable.bmifinall,null);
+        BitmapDrawable bitmapDrawable= (BitmapDrawable) drawable;
+        Bitmap largeicon= bitmapDrawable.getBitmap();
+        Notification notification;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
+                   notification=new Notification.Builder(this) .setLargeIcon(largeicon)
+                    .setSmallIcon(R.drawable.bmifinall)
+                    .setContentText("Its time to take a fitness test")
+                    .setSubText("Notification for your fitness")
+                    .setChannelId(channel_id)
+                    .build();
+                   nm.createNotificationChannel(new NotificationChannel(channel_id,"Fitness Channel",NotificationManager.IMPORTANCE_HIGH));
+        }
+        else{
+            notification=new Notification.Builder(this) .setLargeIcon(largeicon)
+                    .setSmallIcon(R.drawable.bmifinall)
+                    .setContentText("Its time to take a fitness test")
+                    .setSubText("Notification for your fitness")
+                    .build();
+
+        }
+        nm.notify(1,notification);
 
         /******************************redirect to bmi test activity***********************************/
 
